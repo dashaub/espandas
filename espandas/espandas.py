@@ -20,7 +20,7 @@ class espandas(object):
 				records.append(pd.DataFrame([record.get('_source')]))
 			except NotFoundError as nfe:
 				print 'Key not found: %s' % nfe
-				self.failed += 1
+				self.failed_ += 1
 
 		# Prepare the records into a single DataFrame
 		df = pd.concat(records)
@@ -53,5 +53,5 @@ class espandas(object):
 		# The dataframe should be sorted by column name
 		df = df.reindex_axis(sorted(df.columns), axis = 1)
 
-		data = ({'_index': index, '_type': doc_type , 'eventId': record['eventId'], '_source': record} for record in generate_dict(df))
+		data = ({'_index': index, '_type': doc_type , '_id': record['eventId'], '_source': record} for record in generate_dict(df))
 		helpers.bulk(self.client, data)

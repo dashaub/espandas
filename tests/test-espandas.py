@@ -8,9 +8,9 @@ INDEX = 'unit_tests_index'
 TYPE = 'foo_bar'
 
 # Example data frame
-df = pd.DataFrame(np.random.rand(100, 5))
+df = (100 * pd.DataFrame(np.round(np.random.rand(100, 5), 2))).astype(int)
 df.columns = ['A', 'B', 'C', 'D', 'E']
-df['eventId'] = df['A'] + df['B']
+df['eventId'] = df.index + 100
 
 
 es = Elasticsearch()
