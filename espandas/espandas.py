@@ -1,6 +1,7 @@
 import pandas as pd
 import ujson as json
 from elasticsearch import Elasticsearch, helpers
+from elasticsearch.exceptions import NotFoundError
 
 class espandas(object):
 	def __init__(self, **kwargs):

@@ -12,8 +12,6 @@ df = pd.DataFrame(np.random.rand(100, 5))
 df.columns = ['A', 'B', 'C', 'D', 'E']
 df['_id'] = df['A'] + df['B']
 
-a = json.loads(records)
-
 
 es = Elasticsearch()
 try:
