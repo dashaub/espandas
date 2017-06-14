@@ -6,8 +6,28 @@ class espandas(object):
 	def __init__(self, **kwargs):
 		self.client = Elasticsearch(**kwargs)
 
-	def es_read(keys):
-	pass
+	def es_read(keys, index, doc_type):
+	self.successful_ = 0
+	self.failed_ = 0
+
+	# Collect records for all of the keys
+	records = []
+	for key in keys:
+		try:
+			record = self.client.get(index = index, doc_type = doc_type, id = key)
+			self.successful_ += 1
+			records.append(pd.DataFrame([record.get('_source')]))
+		except NotFoundError as nfe:
+			print 'Key not found: %s' % nfe
+			self.failed += 1
+
+	# Prepare the records into a single DataFrame
+	df = pd.concat(records)
+	df.index = [i for i in xrange(df.shape[0])]
+	df.fillna(value = np.nan, inplace = True)
+	df = df.reindex_axis(sorted(df.columns), axis = 1)
+	return df
+
 
 	def es_write(df, index, doc_type):
 	"""
