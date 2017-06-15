@@ -1,5 +1,6 @@
 # espandas
 [![PyPI version](https://badge.fury.io/py/espandas.svg)](https://badge.fury.io/py/espandas)
+[![Coverage Status](https://coveralls.io/repos/github/dashaub/espandas/badge.svg?branch=master)](https://coveralls.io/github/dashaub/espandas?branch=master)
 
 Inserting and querying Pandas DataFrames in ElasticSearch
 
