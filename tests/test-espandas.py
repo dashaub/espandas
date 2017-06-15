@@ -21,35 +21,40 @@ def test_es():
 	try:
 		es.indices.create(INDEX)
 		es.indices.delete(INDEX)
+		return True
 	except RequestError:
-		print 'Index already exists skipping tests'
+		print('Index already exists skipping tests')
 		assert True
-		sys.exit(0)
+		return False
 	except ConnectionError:
-		print  'The ElasticSearch backend is not running. Skipping tests.'
+		print('The ElasticSearch backend is not running. Skipping tests.')
 		assert True
-		sys.exit(0)
+		return False
 	except Exception as e:
-		print 'An unknown error occured connecting to ElasticSearch: %s' % e
+		print('An unknown error occured connecting to ElasticSearch: %s' % e)
 		assert True
-		sys.exit(0)
+		return False
 
 
 def test_es_client():
 	"""
 	Insert a DataFrame and test that is is correctly extracted
 	"""
+	# Only run this test if the index does not already exist
+	# and can be created
+	if test_es():
+		es = Elasticsearch()
+		es.indices.create(INDEX)
 
-	es = Elasticsearch()
-	es.indices.create(INDEX)
+		esp = espandas()
+		esp.es_write(df, INDEX, TYPE)
+		k = list(df.index)
+		res = es_read(k, INDEX, TYPE)
 
-	esp = espandas()
-	esp.es_write(df, INDEX, TYPE)
-	k = list(df.index)
-	res = es_read(k, INDEX, TYPE)
-	assert res.shape == df.shape
-	assert np.all(res.index == df.index)
-	assert np.all(res.columns == np.columns)
-	assert np.all(res == df)
+		# The returned DataFrame should match the original
+		assert res.shape == df.shape
+		assert np.all(res.index == df.index)
+		assert np.all(res.columns == np.columns)
+		assert np.all(res == df)
 
-	es.indices.delete(INDEX)
+		es.indices.delete(INDEX)

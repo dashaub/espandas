@@ -5,9 +5,19 @@ from elasticsearch.exceptions import NotFoundError
 
 class espandas(object):
 	def __init__(self, **kwargs):
+		"""
+		Construct an espandas reader/writer
+		:params **kwargs: arguments to pass for establishing the connection to ElasticSearch
+		"""
 		self.client = Elasticsearch(**kwargs)
 
 	def es_read(self, keys, index, doc_type):
+		"""
+		Read from an ElasticSearch index and return a DataFrame
+		:param keys: a list of keys to extract in elasticsearch
+		:param index: the ElasticSearch index to read
+		:param doc_type: the ElasticSearch doc_type to read
+		"""
 		self.successful_ = 0
 		self.failed_ = 0
 
@@ -33,10 +43,9 @@ class espandas(object):
 	def es_write(self, df, index, doc_type):
 		"""
 		Insert a Pandas DataFrame into ElasticSearch
-		:param df: the DataFrame
+		:param df: the DataFrame, must contain the column 'eventId' for a unique identifier
 		:param index: the ElasticSearch index
-		:param _type: the ElasticSearch type
-		:param es: the connection to ElasticSearch
+		:param doc_type: the ElasticSearch doc_type
 		"""
 
 		def generate_dict(df):
