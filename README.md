@@ -1,4 +1,6 @@
 # espandas
+[![PyPI version](https://badge.fury.io/py/espandas.svg)](https://badge.fury.io/py/espandas)
+
 Inserting and querying Pandas DataFrames in ElasticSearch
 
 ## Usage
