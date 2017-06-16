@@ -30,7 +30,7 @@ class Espandas(object):
 				self.successful_ += 1
 				records.append(pd.DataFrame([record.get('_source')]))
 			except NotFoundError as nfe:
-				print 'Key not found: %s' % nfe
+				print('Key not found: %s' % nfe)
 				self.failed_ += 1
 
 		# Prepare the records into a single DataFrame
