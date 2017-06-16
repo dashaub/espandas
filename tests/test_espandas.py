@@ -1,82 +1,85 @@
+import pytest
+import copy
 import pandas as pd
 import numpy as np
-import ujson as json
+from espandas import Espandas
 from elasticsearch import Elasticsearch, helpers
-from elasticsearch.exceptions import NotFoundError
+from elasticsearch.exceptions import RequestError, ConnectionError
 
-class Espandas(object):
-	def __init__(self, **kwargs):
-		"""
-		Construct an espandas reader/writer
-		:params **kwargs: arguments to pass for establishing the connection to ElasticSearch
-		"""
-		self.client = Elasticsearch(**kwargs)
+# ES variables
+INDEX = 'unit_tests_index'
+TYPE = 'foo_bar'
 
-	def es_read(self, keys, index, doc_type):
-		"""
-		Read from an ElasticSearch index and return a DataFrame
-		:param keys: a list of keys to extract in elasticsearch
-		:param index: the ElasticSearch index to read
-		:param doc_type: the ElasticSearch doc_type to read
-		"""
-		self.successful_ = 0
-		self.failed_ = 0
+# Example data frame
+df = (100 * pd.DataFrame(np.round(np.random.rand(100, 5), 2))).astype(int)
+df.columns = ['A', 'B', 'C', 'D', 'E']
+df['indexId'] = df.index + 100
 
-		# Collect records for all of the keys
-		records = []
-		for key in keys:
-			try:
-				record = self.client.get(index = index, doc_type = doc_type, id = key)
-				self.successful_ += 1
-				records.append(pd.DataFrame([record.get('_source')]))
-			except NotFoundError as nfe:
-				print 'Key not found: %s' % nfe
-				self.failed_ += 1
-
-		# Prepare the records into a single DataFrame
-		df= None
-		if len(records) > 1:
-			df = pd.concat(records)
-			df.index = [i for i in xrange(df.shape[0])]
-			df.fillna(value = np.nan, inplace = True)
-			df = df.reindex_axis(sorted(df.columns), axis = 1)
-		return df
+def test_es():
+	"""
+	Before running other tests, ensure connection to ES is established
+	"""
+	es = Elasticsearch()
+	try:
+		es.indices.create(INDEX)
+		es.indices.delete(INDEX)
+		return True
+	except RequestError:
+		print('Index already exists: skipping tests.')
+		return False
+	except ConnectionError:
+		print('The ElasticSearch backend is not running: skipping tests.')
+		return False
+	except Exception as e:
+		print('An unknown error occured connecting to ElasticSearch: %s' % e)
+		return False
 
 
-	def es_write(self, df, index, doc_type, index_name = 'indexId'):
-		"""
-		Insert a Pandas DataFrame into ElasticSearch
-		:param df: the DataFrame, must contain the column 'indexId' for a unique identifier
-		:param index: the ElasticSearch index
-		:param doc_type: the ElasticSearch doc_type
-		"""
-		if not type(df) == pd.core.frame.DataFrame:
-			raise ValueError('df must be a pandas DataFrame')
+def test_es_client():
+	"""
+	Insert a DataFrame and test that is is correctly extracted
+	"""
+	# Only run this test if the index does not already exist
+	# and can be created and deleted
+	if test_es():
+		try:
+			print('Connection to ElasticSearch established: testing write and read.')
+			es = Elasticsearch()
+			es.indices.create(INDEX)
 
-		if not self.client.indices.exists(index = index):
-			print('index does not exist, creating index')
-			self.client.indices.create(index)
+			esp = Espandas()
+			esp.es_write(df, INDEX, TYPE)
+			k = list(df['indexId'].astype('str'))
+			res = esp.es_read(k, INDEX, TYPE)
 
-		if not index_name in df.columns:
-			raise ValueError('the index_name must be a column in the DataFrame')
-		
-		if len(df[index_name]) != len(set(df[index_name])):
-			raise ValueError('the values in index_name must be unique to use as an ElasticSearch _id')
-		self.index_name = index_name
-
-		def generate_dict(df):
-			"""
-			Generator for creating a dict to be inserted into ElasticSearch
-			for each row of a pd.DataFrame
-			:param df: the input pd.DataFrame to use, must contain an '_id' column
-			"""
-			records = df.to_json(orient = 'records')
-			records = json.loads(records)
-			for record in records:
-				yield record
-
-		# The dataframe should be sorted by column name
-		df = df.reindex_axis(sorted(df.columns), axis = 1)
-
-		data = ({'_index': index, '_type': doc_type , '_id': record[index_name], '_source': record} for record in generate_dict(df))
-		helpers.bulk(self.client, data)
+			# The returned DataFrame should match the original
+			assert res.shape == df.shape
+			assert np.all(res.index == df.index)
+			assert np.all(res.columns == df.columns)
+			assert np.all(res == df)
+			
+			# Bogus keys should not match anything
+			res= esp.es_read(['bar'], INDEX, TYPE)
+			assert res is None
+			num_sample = 3
+			present = list(df.sample(num_sample)['indexId'].astype('str'))
+			present.append('bar')
+			res= esp.es_read(present, INDEX, TYPE)
+			assert res.shape[0] == num_sample
+			
+			# Test for invalid inputs
+			# Input must be a DataFrame
+			with pytest.raises(ValueError):
+				esp.es_write('foobar', INDEX, TYPE)
+			# index_name must exist in the DataFrame
+			with pytest.raises(ValueError):
+				esp.es_write(df, INDEX, TYPE, index_name = 'foo_index')				
+				
+			# Values in index_name must be unique
+			df2 = copy.copy(df)
+			df2['indexId'][0] = df2['indexId'][1]
+			with pytest.raises(ValueError):
+				esp.es_write(df2, INDEX, TYPE)
+		finally:
+			# Cleanup
+			es.indices.delete(INDEX)
