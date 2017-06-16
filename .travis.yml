@@ -8,7 +8,7 @@ python:
   - "nightly" # currently points to 3.7-dev
 # command to install dependencies
 before_install:
-- pip install pytest 
+- pip install pytest pytest-cov python-coveralls
 install: "pip install -r requirements.txt"
 # command to run tests
 before_script: nosetests
