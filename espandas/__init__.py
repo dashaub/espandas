@@ -1,2 +1,2 @@
-from espandas import Espandas
+from .espandas import Espandas
 
