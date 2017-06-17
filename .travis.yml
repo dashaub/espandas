@@ -11,6 +11,8 @@ before_install:
 - pip install pytest pytest-cov python-coveralls
 install: "pip install -r requirements.txt"
 # command to run tests
-before_script: nosetests
-script: py.test --cov=espandas
-after_success: coveralls
+#before_script: nosetests
+script:
+- nosetests
+#- py.test --cov=espandas
+#after_success: coveralls
