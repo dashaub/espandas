@@ -1,5 +1,4 @@
 import pytest
-import copy
 import pandas as pd
 import numpy as np
 from espandas import Espandas
@@ -76,8 +75,8 @@ def test_es_client():
 				esp.es_write(df, INDEX, TYPE, index_name = 'foo_index')				
 				
 			# Values in index_name must be unique
-			df2 = copy.copy(df)
-			df2['indexId'][0] = df2['indexId'][1]
+			df2 = df.copy()
+			df2.ix[0, 'indexId'] = df.ix[1, 'indexId']
 			with pytest.raises(ValueError):
 				esp.es_write(df2, INDEX, TYPE)
 		finally:

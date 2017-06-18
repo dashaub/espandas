@@ -37,7 +37,7 @@ class Espandas(object):
 		df= None
 		if len(records) > 1:
 			df = pd.concat(records)
-			df.index = [i for i in xrange(df.shape[0])]
+			df.index = [i for i in range(df.shape[0])]
 			df.fillna(value = np.nan, inplace = True)
 			df = df.reindex_axis(sorted(df.columns), axis = 1)
 		return df
