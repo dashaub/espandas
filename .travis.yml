@@ -12,6 +12,8 @@ install: travis_wait pip install -r requirements.txt
 # command to run tests
 #before_script: nosetests
 script:
-- nosetests
+- nosetests -v
 #- py.test --cov=espandas
-#after_success: coveralls
+after_success:
+- nosetests --with-coverage --cover-package=espandas --cover-erase
+- coveralls
