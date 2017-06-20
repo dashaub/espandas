@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from espandas import Espandas
-from elasticsearch import Elasticsearch, helpers
+from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError, ConnectionError
 
 # ES variables

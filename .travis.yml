@@ -8,7 +8,7 @@ python:
 # command to install dependencies
 before_install:
 - ./es_install.sh
-- pip install pytest pytest-cov python-coveralls
+- pip install pytest pytest-cov python-coveralls pylint
 install: travis_wait pip install -r requirements.txt
 # command to run tests
 #before_script: nosetests
@@ -18,3 +18,4 @@ script:
 after_success:
 - nosetests --with-coverage --cover-package=espandas --cover-erase
 - coveralls
+- pylint espandas

@@ -1,3 +1,4 @@
+"""Reading and writing pandas DataFrames to ElasticSearch"""
 import pandas as pd
 import numpy as np
 import ujson as json
@@ -5,6 +6,7 @@ from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import NotFoundError
 
 class Espandas(object):
+    """Reading and writing pandas DataFrames to ElasticSearch"""
     def __init__(self, **kwargs):
         """
         Construct an espandas reader/writer
@@ -26,7 +28,7 @@ class Espandas(object):
         records = []
         for key in keys:
             try:
-                record = self.client.get(index = index, doc_type = doc_type, id = key)
+                record = self.client.get(index=index, doc_type=doc_type, id=key)
                 self.successful_ += 1
                 records.append(pd.DataFrame([record.get('_source')]))
             except NotFoundError as nfe:
@@ -34,34 +36,35 @@ class Espandas(object):
                 self.failed_ += 1
 
         # Prepare the records into a single DataFrame
-        df= None
+        df = None
         if len(records) > 1:
             df = pd.concat(records)
             df.index = [i for i in range(df.shape[0])]
-            df.fillna(value = np.nan, inplace = True)
-            df = df.reindex_axis(sorted(df.columns), axis = 1)
+            df.fillna(value=np.nan, inplace=True)
+            df = df.reindex_axis(sorted(df.columns), axis=1)
         return df
 
 
-    def es_write(self, df, index, doc_type, index_name = 'indexId'):
+    def es_write(self, df, index, doc_type, index_name='indexId'):
         """
         Insert a Pandas DataFrame into ElasticSearch
         :param df: the DataFrame, must contain the column 'indexId' for a unique identifier
         :param index: the ElasticSearch index
         :param doc_type: the ElasticSearch doc_type
         """
-        if not type(df) == pd.core.frame.DataFrame:
+        if not isinstance(df, pd.DataFame):
             raise ValueError('df must be a pandas DataFrame')
 
-        if not self.client.indices.exists(index = index):
+        if not self.client.indices.exists(index=index):
             print('index does not exist, creating index')
             self.client.indices.create(index)
 
         if not index_name in df.columns:
             raise ValueError('the index_name must be a column in the DataFrame')
-        
+
         if len(df[index_name]) != len(set(df[index_name])):
-            raise ValueError('the values in index_name must be unique to use as an ElasticSearch _id')
+            message = 'the values in index_name must be unique to use as an ElasticSearch _id'
+            raise ValueError(message)
         self.index_name = index_name
 
         def generate_dict(df):
@@ -70,13 +73,17 @@ class Espandas(object):
             for each row of a pd.DataFrame
             :param df: the input pd.DataFrame to use, must contain an '_id' column
             """
-            records = df.to_json(orient = 'records')
+            records = df.to_json(orient='records')
             records = json.loads(records)
             for record in records:
                 yield record
 
         # The dataframe should be sorted by column name
-        df = df.reindex_axis(sorted(df.columns), axis = 1)
+        df = df.reindex_axis(sorted(df.columns), axis=1)
 
-        data = ({'_index': index, '_type': doc_type , '_id': record[index_name], '_source': record} for record in generate_dict(df))
+        data = ({'_index': index,
+                 '_type': doc_type,
+                 '_id': record[index_name],
+                 '_source': record}
+                for record in generate_dict(df))
         helpers.bulk(self.client, data)
