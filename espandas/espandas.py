@@ -52,7 +52,7 @@ class Espandas(object):
         :param index: the ElasticSearch index
         :param doc_type: the ElasticSearch doc_type
         """
-        if not isinstance(df, pd.DataFame):
+        if not isinstance(df, pd.DataFrame):
             raise ValueError('df must be a pandas DataFrame')
 
         if not self.client.indices.exists(index=index):
