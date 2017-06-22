@@ -1,3 +1,4 @@
+"""Unit tests for the Espandas class"""
 import pytest
 import pandas as pd
 import numpy as np
@@ -58,22 +59,22 @@ def test_es_client():
             assert np.all(res == df)
             
             # Bogus keys should not match anything
-            res= esp.es_read(['bar'], INDEX, TYPE)
+            res = esp.es_read(['bar'], INDEX, TYPE)
             assert res is None
             num_sample = 3
             present = list(df.sample(num_sample)['indexId'].astype('str'))
             present.append('bar')
-            res= esp.es_read(present, INDEX, TYPE)
+            res = esp.es_read(present, INDEX, TYPE)
             assert res.shape[0] == num_sample
-            
+
             # Test for invalid inputs
             # Input must be a DataFrame
             with pytest.raises(ValueError):
                 esp.es_write('foobar', INDEX, TYPE)
             # index_name must exist in the DataFrame
             with pytest.raises(ValueError):
-                esp.es_write(df, INDEX, TYPE, index_name = 'foo_index')                
-                
+                esp.es_write(df, INDEX, TYPE, index_name='foo_index')
+
             # Values in index_name must be unique
             df2 = df.copy()
             df2.ix[0, 'indexId'] = df.ix[1, 'indexId']

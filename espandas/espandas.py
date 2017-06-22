@@ -13,6 +13,9 @@ class Espandas(object):
         :params **kwargs: arguments to pass for establishing the connection to ElasticSearch
         """
         self.client = Elasticsearch(**kwargs)
+        self.successful_ = None
+        self.failed_ = None
+        self.index_name = None
 
     def es_read(self, keys, index, doc_type):
         """
