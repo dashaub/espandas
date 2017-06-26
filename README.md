@@ -6,7 +6,7 @@
 Reading and writing [pandas](http://pandas.pydata.org/) DataFrames in [ElasticSearch](https://www.elastic.co/)
 
 ## Requirements.
-This package should work on both python 2 and 3 but has primarily been tested on python 2.7. ElasticSearch is of course required and should be version 2.x.
+This package should work on both python 2(>=2.7) and 3(>=3.4) but has primarily been tested on python 2.7. ElasticSearch is of course required and should be version 2.x.
 
 ## Installation
 The package is hosted on PyPi and can be installed with pip:
