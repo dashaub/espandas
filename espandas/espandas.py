@@ -76,8 +76,7 @@ class Espandas(object):
             for each row of a pd.DataFrame
             :param df: the input pd.DataFrame to use, must contain an '_id' column
             """
-            records = df.to_json(orient='records')
-            records = json.loads(records)
+            records = df.to_dict(orient='records')
             for record in records:
                 yield record
 

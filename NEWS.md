@@ -1,3 +1,6 @@
+# Version 1.0.3 [unreleased]
+* drop "ujson" dependency
+
 # Version 1.0.2 [2017-06-25]
 * Fix compability for Python 3
 * Setup coveralls
