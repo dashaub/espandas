@@ -1,7 +1,6 @@
 """Reading and writing pandas DataFrames to ElasticSearch"""
 import pandas as pd
 import numpy as np
-import ujson as json
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import NotFoundError
 
@@ -33,18 +32,17 @@ class Espandas(object):
             try:
                 record = self.client.get(index=index, doc_type=doc_type, id=key)
                 self.successful_ += 1
-                records.append(pd.DataFrame([record.get('_source')]))
+                records.append(record.get('_source'))
             except NotFoundError as nfe:
                 print('Key not found: %s' % nfe)
                 self.failed_ += 1
 
         # Prepare the records into a single DataFrame
         df = None
-        if len(records) > 1:
-            df = pd.concat(records)
-            df.index = [i for i in range(df.shape[0])]
-            df.fillna(value=np.nan, inplace=True)
-            df = df.reindex_axis(sorted(df.columns), axis=1)
+        if records:
+            df = pd.DataFrame(records)
+            #df.index = [i for i in range(df.shape[0])]
+            df = df.reindex_axis(sorted(df.columns), axis=1).fillna(value=np.nan)
         return df
 
 
