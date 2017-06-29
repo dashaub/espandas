@@ -14,6 +14,7 @@ TYPE = 'foo_bar'
 df = (100 * pd.DataFrame(np.round(np.random.rand(100, 5), 2))).astype(int)
 df.columns = ['A', 'B', 'C', 'D', 'E']
 df['indexId'] = df.index + 100
+df = df.astype('str')
 
 def test_es():
     """

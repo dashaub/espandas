@@ -39,7 +39,9 @@ class Espandas(object):
 
         # Prepare the records into a single DataFrame
         df = None
+        import pdb
         if records:
+            pdb.set_trace()
             df = pd.DataFrame(records).fillna(value=np.nan)
             #df.index = [i for i in range(df.shape[0])]
             df = df.reindex_axis(sorted(df.columns), axis=1)
