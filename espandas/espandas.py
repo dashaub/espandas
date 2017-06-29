@@ -40,9 +40,9 @@ class Espandas(object):
         # Prepare the records into a single DataFrame
         df = None
         if records:
-            df = pd.DataFrame(records)
+            df = pd.DataFrame(records).fillna(value=np.nan)
             #df.index = [i for i in range(df.shape[0])]
-            df = df.reindex_axis(sorted(df.columns), axis=1).fillna(value=np.nan)
+            df = df.reindex_axis(sorted(df.columns), axis=1)
         return df
 
 
