@@ -32,7 +32,8 @@ class Espandas(object):
             try:
                 record = self.client.get(index=index, doc_type=doc_type, id=key)
                 self.successful_ += 1
-                records.append(record.get('_source'))
+                if '_source' in record:
+                    records.append(record['_source'])
             except NotFoundError as nfe:
                 print('Key not found: %s' % nfe)
                 self.failed_ += 1
