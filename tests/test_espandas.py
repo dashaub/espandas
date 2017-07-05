@@ -58,7 +58,7 @@ def test_es_client():
             assert np.all(res.index == df.index)
             assert np.all(res.columns == df.columns)
             assert np.all(res == df)
-            
+
             # Bogus keys should not match anything
             res = esp.es_read(['bar'], INDEX, TYPE)
             assert res is None
