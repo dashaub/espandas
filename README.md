@@ -25,7 +25,7 @@ py.test --cov=espandas
 ```
 
 ## Usage
-This example assumes ElasticSearch is running on localhost on the standard port. If different connection infromation needs to be specified, it can be passed to the `Espandas()` constructor as keyward arguments. The DataFrame to insert ***must*** have a column that will be used for the unique identifier `_id` in ElasticSearch: the default value is `index_name = 'indexId'`.
+This example assumes ElasticSearch is running on localhost on the standard port. If different connection infromation needs to be specified, it can be passed to the `Espandas()` constructor as keyward arguments. The DataFrame to insert ***must*** have a column that will be used for the unique identifier `_id` in ElasticSearch: the default value is `uid_name = 'indexId'`.
 ```
 import pandas as pd
 import numpy as np

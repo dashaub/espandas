@@ -72,11 +72,11 @@ def test_es_client():
             # Input must be a DataFrame
             with pytest.raises(ValueError):
                 esp.es_write('foobar', INDEX, TYPE)
-            # index_name must exist in the DataFrame
+            # uid_name must exist in the DataFrame
             with pytest.raises(ValueError):
-                esp.es_write(df, INDEX, TYPE, index_name='foo_index')
+                esp.es_write(df, INDEX, TYPE, uid_name='foo_index')
 
-            # Values in index_name must be unique
+            # Values in uid_name must be unique
             df2 = df.copy()
             df2.ix[0, 'indexId'] = df.ix[1, 'indexId']
             with pytest.raises(ValueError):

@@ -1,4 +1,5 @@
 # Version 1.0.3 [unreleased]
+* The argument `index_name` has been changed to `uid_name` for clarity and to prevent confusion with an ElasticSearch index.
 * drop "ujson" dependency
 
 # Version 1.0.2 [2017-06-25]

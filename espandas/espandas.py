@@ -14,7 +14,7 @@ class Espandas(object):
         self.client = Elasticsearch(**kwargs)
         self.successful_ = None
         self.failed_ = None
-        self.index_name = None
+        self.uid_name = None
 
     def es_read(self, keys, index, doc_type):
         """
@@ -46,7 +46,7 @@ class Espandas(object):
         return df
 
 
-    def es_write(self, df, index, doc_type, index_name='indexId'):
+    def es_write(self, df, index, doc_type, uid_name='indexId'):
         """
         Insert a Pandas DataFrame into ElasticSearch
         :param df: the DataFrame, must contain the column 'indexId' for a unique identifier
@@ -60,13 +60,13 @@ class Espandas(object):
             print('index does not exist, creating index')
             self.client.indices.create(index)
 
-        if not index_name in df.columns:
-            raise ValueError('the index_name must be a column in the DataFrame')
+        if not uid_name in df.columns:
+            raise ValueError('the uid_name must be a column in the DataFrame')
 
-        if len(df[index_name]) != len(set(df[index_name])):
-            message = 'the values in index_name must be unique to use as an ElasticSearch _id'
+        if len(df[uid_name]) != len(set(df[uid_name])):
+            message = 'the values in uid_name must be unique to use as an ElasticSearch _id'
             raise ValueError(message)
-        self.index_name = index_name
+        self.uid_name = uid_name
 
         def generate_dict(df):
             """
@@ -84,7 +84,7 @@ class Espandas(object):
 
         data = ({'_index': index,
                  '_type': doc_type,
-                 '_id': record[index_name],
+                 '_id': record[uid_name],
                  '_source': record}
                 for record in generate_dict(df))
         helpers.bulk(self.client, data)
