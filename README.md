@@ -34,7 +34,7 @@ from espandas import Espandas
 # Example data frame
 df = (100 * pd.DataFrame(np.round(np.random.rand(100, 5), 2))).astype(int)
 df.columns = ['A', 'B', 'C', 'D', 'E']
-df['indexId'] = df.index + 100
+df['indexId'] = (df.index + 100).astype(str)
 
 # Create a client and write the DataFrame. If necessary, connection
 # information to the ES cluster can be passed in the espandas constructor
@@ -44,7 +44,7 @@ esp.es_write(df, INDEX, TYPE)
 
 
 # Query for the first ten rows and see that they match the original
-k = list(df.index)[0:10]
+k = df.indexId[0:10]
 res = es_read(k, INDEX, TYPE)
 res == df.iloc[0:10]
 ```
