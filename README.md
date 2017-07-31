@@ -39,6 +39,8 @@ df['indexId'] = (df.index + 100).astype(str)
 # Create a client and write the DataFrame. If necessary, connection
 # information to the ES cluster can be passed in the espandas constructor
 # as keyword arguments.
+INDEX = 'foo_index'
+TYPE = 'bar_type'
 esp = Espandas()
 esp.es_write(df, INDEX, TYPE)
 
