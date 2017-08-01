@@ -47,8 +47,8 @@ esp.es_write(df, INDEX, TYPE)
 
 # Query for the first ten rows and see that they match the original
 k = df.indexId[0:10]
-res = es_read(k, INDEX, TYPE)
-res == df.iloc[0:10]
+res = esp.es_read(k, INDEX, TYPE)
+res == df.iloc[0:10].astype('str')
 ```
 
 ## License
