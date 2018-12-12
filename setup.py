@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'espandas',
   packages = ['espandas'],
-  version = '1.0.3',
+  version = '1.0.4',
   description = 'Insert and Extract Pandas DataFrames with ElasticSearch',
   author = 'David Shaub',
   author_email = 'davidshaub@gmx.com',
