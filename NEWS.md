@@ -1,3 +1,7 @@
+# Version 1.0.4 [2018-12-13]
+* Update dependency requirements to allower newer versions
+* Test with elasticsearch 2.4.6
+
 # Version 1.0.3 [unreleased]
 * The argument `index_name` has been changed to `uid_name` for clarity and to prevent confusion with an ElasticSearch index.
 * drop "ujson" dependency
