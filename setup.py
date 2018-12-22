@@ -7,7 +7,7 @@ setup(
   author = 'David Shaub',
   author_email = 'davidshaub@gmx.com',
   url = 'https://github.com/dashaub/espandas',
-  download_url = 'https://github.com/dashaub/espandas/archive/1.0.2.tar.gz',
+  download_url = 'https://github.com/dashaub/espandas/archive/1.0.4.tar.gz',
   keywords = ['ElasticSearch', 'pandas', 'nosql'],
   classifiers = ['Development Status :: 4 - Beta',
                  'Environment :: Console',
