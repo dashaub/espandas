@@ -42,7 +42,7 @@ class Espandas(object):
         df = None
         if records:
             df = pd.DataFrame(records).fillna(value=np.nan)
-            df = df.reindex_axis(sorted(df.columns), axis=1)
+            df = df.reindex(sorted(df.columns), axis=1)
         return df
 
 
@@ -79,7 +79,7 @@ class Espandas(object):
                 yield record
 
         # The dataframe should be sorted by column name
-        df = df.reindex_axis(sorted(df.columns), axis=1)
+        df = df.reindex(sorted(df.columns), axis=1)
         df = df.astype('str')
 
         data = ({'_index': index,
