@@ -80,7 +80,6 @@ class Espandas(object):
 
         # The dataframe should be sorted by column name
         df = df.reindex(sorted(df.columns), axis=1)
-        df = df.astype('str')
 
         data = ({'_index': index,
                  '_type': doc_type,
